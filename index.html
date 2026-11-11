@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roleta Natalina 🎄 | Sorteios Mágicos de Natal</title>
+  
+  <!-- Meta tags para SEO e compartilhamento -->
+  <meta name="description" content="Roleta Natalina interativa para sorteios de Amigo Secreto, Ceia de Natal, prendas e presentes.">
+  <meta name="theme-color" content="#8B0000">
+
+  <!-- Favicon temático em SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎄</text></svg>">
+
+  <!-- Google Fonts: Fonte temática natalina e fonte limpa para leitura -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Mountains+of+Christmas:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Canvas de neve caindo ao fundo -->
+  <canvas id="snow-canvas" aria-hidden="true"></canvas>
+
+  <!-- Luzinhas de Natal piscando no topo -->
+  <div class="christmas-lights" aria-hidden="true">
+    <div class="wire"></div>
+    <ul class="lights-string">
+      <li class="light red"></li>
+      <li class="light gold"></li>
+      <li class="light green"></li>
+      <li class="light red"></li>
+      <li class="light blue"></li>
+      <li class="light gold"></li>
+      <li class="light green"></li>
+      <li class="light red"></li>
+      <li class="light gold"></li>
+      <li class="light blue"></li>
+      <li class="light green"></li>
+      <li class="light red"></li>
+      <li class="light gold"></li>
+      <li class="light green"></li>
+      <li class="light red"></li>
+      <li class="light blue"></li>
+      <li class="light gold"></li>
+      <li class="light green"></li>
+      <li class="light red"></li>
+      <li class="light gold"></li>
+    </ul>
+  </div>
+
+  <div class="app-container">
+    <!-- Cabeçalho Festivo e Limpo -->
+    <header class="app-header">
+      <div class="header-spacer"></div>
+      
+      <div class="header-title-box">
+        <h1 class="festive-title">
+          <span class="santa-hat-icon" aria-hidden="true">🎅</span>
+          Roleta Natalina
+          <span class="tree-icon" aria-hidden="true">🎄</span>
+        </h1>
+      </div>
+
+      <!-- Ações no topo direito: Som e Gaveta de Configurações -->
+      <div class="header-actions">
+        <button id="sound-toggle-btn" class="header-btn" title="Ativar/Desativar Sons" aria-label="Alternar som">
+          <span id="sound-icon">🔊</span>
+          <span class="btn-text">Som: Ligado</span>
+        </button>
+        <button id="open-drawer-btn" class="header-btn drawer-open-btn" title="Gerenciar itens da roleta" aria-label="Abrir configurações">
+          <span class="btn-icon">⚙️</span>
+          <span class="btn-text">Gerenciar Itens</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Área Principal da Roleta (Destaque Gigante Centro-Esquerdo) -->
+    <main class="main-stage">
+      <section class="wheel-section" aria-label="Área da Roleta">
+        <div class="wheel-stage">
+          <!-- Ponteiro no topo com folhas de azevinho, frutos e estrela dourada -->
+          <div class="pointer-wrapper">
+            <div id="wheel-pointer" class="wheel-pointer" title="Indicador da fatia sorteada">
+              <svg viewBox="0 0 100 95" class="pointer-svg" filter="drop-shadow(0px 4px 8px rgba(0,0,0,0.6))">
+                <!-- Folhas de azevinho verdes -->
+                <path d="M 50 32 C 38 22 24 10 14 22 C 22 32 30 38 42 38 Z" fill="#1B4D3E" stroke="#0E3D23" stroke-width="1.5" />
+                <path d="M 50 32 C 62 22 76 10 86 22 C 78 32 70 38 58 38 Z" fill="#1B4D3E" stroke="#0E3D23" stroke-width="1.5" />
+                <path d="M 50 32 C 42 16 46 2 50 0 C 54 2 58 16 50 32 Z" fill="#165B33" stroke="#0E3D23" stroke-width="1.5" />
+                
+                <!-- Frutos vermelhos de azevinho -->
+                <circle cx="44" cy="30" r="4.5" fill="#C41E3A" stroke="#FFFFFF" stroke-width="0.8" />
+                <circle cx="56" cy="30" r="4.5" fill="#C41E3A" stroke="#FFFFFF" stroke-width="0.8" />
+                <circle cx="50" cy="24" r="4.5" fill="#E63946" stroke="#FFFFFF" stroke-width="0.8" />
+
+                <!-- Estrela dourada e ponta da seta apontando para baixo -->
+                <polygon points="50,26 54,37 66,37 56,45 60,57 50,49 40,57 44,45 34,37 46,37" fill="#FFE066" stroke="#B8860B" stroke-width="1.5" />
+                <path d="M 43 50 L 57 50 L 50 90 Z" fill="#D4AF37" stroke="#8B6508" stroke-width="2" />
+                <circle cx="50" cy="41" r="3.5" fill="#C41E3A" stroke="#FFFFFF" stroke-width="1" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Moldura da Roleta com Canvas de Alta Resolução -->
+          <div class="wheel-frame" id="wheel-frame">
+            <canvas id="wheel-canvas" width="720" height="720"></canvas>
+            
+            <!-- Botão Central de Girar -->
+            <button id="spin-btn" class="wheel-center-btn" title="Clique ou pressione Espaço para girar">
+              <div class="center-btn-inner">
+                <span class="spin-gift-icon">🎁</span>
+                <span class="spin-label">GIRAR</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Instrução de atalho abaixo da roleta -->
+        <div class="spin-hint">
+          <kbd>[Espaço]</kbd> ou clique no botão central para girar
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Fundo escuro semi-transparente para fechar gaveta em telas menores -->
+  <div id="drawer-backdrop" class="drawer-backdrop" aria-hidden="true"></div>
+
+  <!-- Nova Gaveta Lateral Temática e Colada no Canto Direito (Drawer) -->
+  <aside id="settings-drawer" class="settings-drawer" aria-label="Configurações da Roleta">
+    <!-- Cobertura de neve acumulada com folhas de azevinho e frutos -->
+    <div class="drawer-snow-cap" aria-hidden="true">
+      <div class="drawer-holly holly-left">
+        <svg viewBox="0 0 65 45">
+          <path d="M 28 32 C 12 32 4 20 12 10 C 20 18 28 22 38 23 Z" fill="#1B4D3E" />
+          <path d="M 35 27 C 25 12 30 2 42 4 C 42 16 40 22 35 27 Z" fill="#165B33" />
+          <circle cx="28" cy="30" r="4.5" fill="#C41E3A" stroke="#FFFFFF" stroke-width="0.8" />
+          <circle cx="36" cy="27" r="4" fill="#E63946" stroke="#FFFFFF" stroke-width="0.8" />
+          <circle cx="32" cy="35" r="4" fill="#8B0000" stroke="#FFFFFF" stroke-width="0.8" />
+        </svg>
+      </div>
+      <svg class="snow-drift-svg" viewBox="0 0 440 50" preserveAspectRatio="none">
+        <path d="M 0,0 L 440,0 L 440,16 Q 410,38 380,18 Q 345,46 310,18 Q 275,44 240,18 Q 200,48 160,20 Q 120,44 80,18 Q 40,42 0,16 Z" fill="#FFFFFF" />
+      </svg>
+      <div class="drawer-holly holly-right">
+        <svg viewBox="0 0 65 45">
+          <path d="M 37 32 C 53 32 61 20 53 10 C 45 18 37 22 27 23 Z" fill="#1B4D3E" />
+          <path d="M 30 27 C 40 12 35 2 23 4 C 23 16 25 22 30 27 Z" fill="#165B33" />
+          <circle cx="37" cy="30" r="4.5" fill="#C41E3A" stroke="#FFFFFF" stroke-width="0.8" />
+          <circle cx="29" cy="27" r="4" fill="#E63946" stroke="#FFFFFF" stroke-width="0.8" />
+          <circle cx="33" cy="35" r="4" fill="#8B0000" stroke="#FFFFFF" stroke-width="0.8" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Conteúdo da Gaveta -->
+    <div class="drawer-content">
+      <!-- Barra Superior com Botão de Fechar -->
+      <div class="drawer-top-bar">
+        <button id="close-drawer-btn" class="drawer-close-btn" aria-label="Fechar gaveta de configurações">
+          ✕ Fechar
+        </button>
+      </div>
+
+      <!-- Título Temático com Flocos de Neve -->
+      <div class="drawer-title-box">
+        <h2 class="drawer-title">
+          <span class="snowflake-icon">❄</span>
+          <span class="snowflake-icon mini">❄</span>
+          CONFIGURAÇÕES DA ROLETA
+          <span class="snowflake-icon mini">❄</span>
+          <span class="snowflake-icon">❄</span>
+        </h2>
+      </div>
+
+      <!-- Card 1: Adicionar Item -->
+      <div class="drawer-card add-card">
+        <div class="card-header">
+          <h3><span class="card-icon">✏️</span> Adicionar Item</h3>
+        </div>
+        <form id="add-item-form" class="add-form" autocomplete="off">
+          <div class="input-group">
+            <input 
+              type="text" 
+              id="item-input" 
+              class="item-input" 
+              placeholder="Ex: Torta de Nozes, Caneca..." 
+              maxlength="35"
+              required
+            >
+            <button type="submit" id="add-item-btn" class="btn-add-primary" title="Adicionar à roleta">
+              + Adicionar
+            </button>
+          </div>
+        </form>
+        
+        <div class="options-group">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="auto-remove-toggle">
+            <span class="checkmark"></span>
+            <span class="label-text">Remover item sorteado da roleta</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Card 2: Itens da Roleta -->
+      <div class="drawer-card items-card">
+        <div class="card-header items-card-header">
+          <div class="header-left">
+            <h3><span class="card-icon">📜</span> Itens da Roleta</h3>
+            <span id="items-count-badge" class="count-badge">8 itens</span>
+          </div>
+          <div class="header-actions-inline">
+            <button id="shuffle-btn" class="btn-inline-action" title="Embaralhar itens na roleta">
+              🔀 Embaralhar
+            </button>
+            <button id="clear-all-btn" class="btn-inline-action danger" title="Limpar todos os itens">
+              🗑️ Limpar
+            </button>
+          </div>
+        </div>
+
+        <!-- Listas Rápidas Prontas (Presets) -->
+        <div class="presets-compact-box">
+          <span class="presets-label">Listas Prontas:</span>
+          <div class="preset-buttons-grid">
+            <button class="preset-pill" data-preset="secret-santa" title="Carregar lista de Amigo Secreto">🎁 Amigo Secreto</button>
+            <button class="preset-pill" data-preset="supper-menu" title="Carregar lista de Ceia de Natal">🍗 Ceia</button>
+            <button class="preset-pill" data-preset="challenges" title="Carregar Prendas e Desafios">🎭 Prendas</button>
+            <button class="preset-pill" data-preset="prizes" title="Carregar Prêmios e Brindes">🏆 Prêmios</button>
+          </div>
+        </div>
+
+        <p id="min-items-warning" class="warning-text hidden">
+          ⚠️ Cadastre no mínimo 2 itens para girar a roleta!
+        </p>
+
+        <!-- Lista rolável de itens cadastrados -->
+        <ul id="items-list" class="items-list" aria-live="polite">
+          <!-- Preenchido via JavaScript -->
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal Festivo de Resultado / Vencedor -->
+  <div id="winner-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-ribbon" aria-hidden="true">🎀</div>
+      <div class="modal-sparkles" aria-hidden="true">✨ ⭐ ✨</div>
+      <h2 id="modal-title" class="modal-heading">Temos um Sorteado!</h2>
+      <p class="modal-sub">O destino natalino escolheu:</p>
+      
+      <div class="winner-display-box">
+        <span class="winner-decor left">🎉</span>
+        <span id="winner-name" class="winner-name">Nome do Vencedor</span>
+        <span class="winner-decor right">🎉</span>
+      </div>
+
+      <p id="auto-remove-notice" class="auto-remove-notice hidden">
+        ✨ Este item foi removido da roleta automaticamente.
+      </p>
+
+      <div class="modal-actions">
+        <button id="spin-again-modal-btn" class="btn-primary festive">
+          🔄 Girar Novamente
+        </button>
+        <button id="remove-winner-modal-btn" class="btn-secondary">
+          🗑️ Remover Este Item
+        </button>
+      </div>
+
+      <button id="close-modal-btn" class="modal-close-x" aria-label="Fechar janela de resultado">&times;</button>
+    </div>
+  </div>
+
+  <!-- Canvas para Confetes e Fagulhas -->
+  <canvas id="confetti-canvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
